@@ -1,6 +1,7 @@
 import datetime
 import os
 import json
+import time
 from supabase import create_client
 from google import genai
 import requests
@@ -94,4 +95,7 @@ def generate_and_store_content(feed_url, category_name):
 if __name__ == "__main__":
     # Pass the actual RSS web links directly into the function
     generate_and_store_content("https://www.thehindu.com/news/national/feeder/default.rss", category_name="national")
+    # 2. Add a 60-second pause before asking Gemini for the next batch
+    print("Waiting 60 seconds to respect Gemini API rate limits...")
+    time.sleep(60)
     generate_and_store_content("https://feeds.bbci.co.uk/news/world/rss.xml", category_name="international")
