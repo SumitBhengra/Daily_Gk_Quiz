@@ -6,17 +6,18 @@ from google import genai
 import requests
 import feedparser
 
-# Hardcode the URL directly so GitHub Secrets can never mess it up with a bad value
+# Force the URL to be a hardcoded literal so GitHub Secrets can never inject a bad value
 SUPABASE_URL = "https://gprgdzahgyebsghbgoav.supabase.co"
 
-# Keep the key pulling safely from GitHub Secrets (with your local fallback)
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY") or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwcmdkemFoZ3llYnNnaGJnb2F2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NSIzNDgzMywiZXhwIjoyMTAwODEwODMzfQ.2jziL8RHMIOtLMTfRUObb__ZkssawAzDWKhq5n7du4k"
+# Pull only the key safely from environment variables/fallback
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY") or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwcmdkemFoZ3llYnNnaGJnb2F2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NTIzNDgzMywiZXhwIjoyMTAwODEwODMzfQ.2jziL8RHMIOtLMTfRUObb__ZkssawAzDWKhq5n7du4k"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Gemini API configuration
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or "AQ.Ab8RN6JaYYwDs24nR0MJERBCSJJyOK6gCDerZzTGOrj5q3dRIw"
 client = genai.Client(api_key=GEMINI_API_KEY)
+
 def fetch_rss_headlines(feed_url, max_items=3):
     # Pretend to be a real Chrome browser so Google/BBC doesn't block the request
     headers = {
