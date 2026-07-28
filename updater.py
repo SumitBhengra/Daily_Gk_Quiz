@@ -6,17 +6,16 @@ from google import genai
 import requests
 import feedparser
 
-# Force the URL to be a hardcoded literal so GitHub Secrets can never inject a bad value
+# Hardcode the clean base URL directly so it never fails
 SUPABASE_URL = "https://gprgdzahgyebsghbgoav.supabase.co"
 
-# Pull only the key safely from environment variables/fallback
+# Explicitly define your keys with secure fallbacks
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY") or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwcmdkemFoZ3llYnNnaGJnb2F2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NTIzNDgzMywiZXhwIjoyMTAwODEwODMzfQ.2jziL8RHMIOtLMTfRUObb__ZkssawAzDWKhq5n7du4k"
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# Gemini API configuration
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or "AQ.Ab8RN6JaYYwDs24nR0MJERBCSJJyOK6gCDerZzTGOrj5q3dRIw"
-client = genai.Client(api_key=GEMINI_API_KEY)
+
+# Initialize clients cleanly
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY.strip('"\' '))
+client = genai.Client(api_key=GEMINI_API_KEY.strip('"\' '))
 
 def fetch_rss_headlines(feed_url, max_items=3):
     # Pretend to be a real Chrome browser so Google/BBC doesn't block the request
