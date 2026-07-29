@@ -386,6 +386,10 @@
                 .eq('date', targetDate)
                 .eq('category', currentCategory);
 
+            if (currentSubCategory !== 'all') {
+                quizQuery = quizQuery.ilike('sub_category', currentSubCategory);
+            }
+            
             const { data: quizzes } = await quizQuery;
 
             if (quizzes?.length) { 

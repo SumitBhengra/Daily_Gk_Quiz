@@ -65,6 +65,7 @@ def generate_and_store_content(feed_url, category_name):
        - "options": list of 4 options
        - "correct_index": integer (0 to 3)
        - "explanation": string explaining the underlying concept from an exam perspective.
+       - "sub_category": string (Choose ONLY from: "Governance & Policies", "Economy", "Science & Tech", "Environment", "Sports", "Awards & Honors")
 
     Return ONLY valid JSON. Here is the news text:
     {news_text}
@@ -94,6 +95,7 @@ def generate_and_store_content(feed_url, category_name):
             "correct_index": quiz["correct_index"],
             "explanation": quiz["explanation"],
             "category": category_name.title(),
+            "sub_category": quiz["sub_category"],
             "date": str(datetime.date.today())
         }).execute()
 
