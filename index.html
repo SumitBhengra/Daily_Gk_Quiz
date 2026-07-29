@@ -358,15 +358,16 @@
             answered = false;
             
             // Query Notes from Supabase
+            // Query Notes from Supabase
             let notesQuery = supabase
                 .from('current_affairs_notes')
                 .select('note_text')
                 .eq('date', targetDate)
-                .eq('category', currentCategory);
+                .ilike('category', currentCategory); // Changed .eq to .ilike
 
             // Filter by Sub-Category if not 'all'
             if (currentSubCategory !== 'all') {
-                notesQuery = notesQuery.eq('sub_category', currentSubCategory);
+                notesQuery = notesQuery.ilike('sub_category', currentSubCategory); // Changed to .ilike here too just to be safe!
             }
 
             const { data: notes } = await notesQuery;
