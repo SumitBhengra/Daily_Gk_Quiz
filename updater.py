@@ -21,7 +21,7 @@ if not SUPABASE_KEY or not GEMINI_API_KEY:
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY.strip('"\' \n\r'))
 client = genai.Client(api_key=GEMINI_API_KEY.strip('"\' \n\r'))
 
-def fetch_rss_headlines(feed_url, max_items=3):
+def fetch_rss_headlines(feed_url, max_items=20):
     # Pretend to be a real Chrome browser so Google/BBC doesn't block the request
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -56,7 +56,10 @@ def generate_and_store_content(feed_url, category_name):
     - Constitutional developments, judiciary judgments, and International Relations (IR)
 
     Output a strict JSON object with two keys:
-    1. "notes": A list of exactly 5 high-yield, two line exam-focused bulletin notes highlighting the core significance of the news.
+    1. "notes": A list of exactly 5 high-yield objects. Each object must have:
+       - "text": string (A two-line exam-focused bulletin highlighting the core significance)
+       - "category": string (Choose ONLY from: "National", "International")
+       - "sub_category": string (Choose ONLY from: "Governance & Policies", "Economy", "Science & Tech", "Environment", "Sports", "Awards & Honors")
     2. "quizzes": A list of exactly 5 multiple-choice questions testing critical conceptual or factual points suitable for competitive exams. Each question item must have:
        - "question": string
        - "options": list of 4 options
@@ -76,12 +79,13 @@ def generate_and_store_content(feed_url, category_name):
     clean_text = response.text.replace("```json", "").replace("```", "").strip()
     data = json.loads(clean_text)
 
-    for note in data["notes"]:
+    for note_obj in data["notes"]:
         supabase.table("current_affairs_notes").insert({
-    "note_text": note, 
-    "category": category_name,
-    "date": str(datetime.date.today())  # <-- Add this line
-        }).execute()
+        "note_text": note_obj["text"],              # The actual news text
+        "category": note_obj["category"],           # "National" or "International"
+        "sub_category": note_obj["sub_category"],   # "Economy", "Sports", etc.
+        "date": str(datetime.date.today())          # Your date logic!
+    }).execute()
 
     for quiz in data["quizzes"]:
         supabase.table("daily_quizzes").insert({
@@ -89,7 +93,7 @@ def generate_and_store_content(feed_url, category_name):
             "options": quiz["options"],
             "correct_index": quiz["correct_index"],
             "explanation": quiz["explanation"],
-            "category": category_name,
+            "category": category_name.title(),
             "date": str(datetime.date.today())
         }).execute()
 
